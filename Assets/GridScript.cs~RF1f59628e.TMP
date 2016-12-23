@@ -1,0 +1,195 @@
+﻿
+
+using UnityEngine;
+using UnityEngine.Assertions;
+
+using System.Collections;
+using System.Collections.Generic;
+
+public class GridScript : MonoBehaviour {
+
+	// Use this for initialization
+	void Start () {
+
+        totalAmplitude = 0;
+
+        // create render texture
+        RenderTextureReadWrite readWrite = new RenderTextureReadWrite();
+        canvasTexture = new RenderTexture(256, 256, 0, RenderTextureFormat.ARGB32, readWrite);
+
+        clearShader = Shader.Find("Unlit/ClearShader");
+        clearMaterial = new Material(clearShader);
+
+        ripplingShader = Shader.Find("Unlit/RipplingShader");
+        ripplingMaterial = new Material(ripplingShader);
+
+
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+
+        float[] bboxSizeArray = new float[4] { 0.0f, 0.0f, 0.0f, 1.0f };
+        if (mesh != null)
+        {
+            Bounds bounds = mesh.bounds;
+
+
+            bbox2DSize = new Vector2(0.0f, 0.0f);
+
+            Vector3 bbox3DSize= new Vector3(2 * bounds.extents.x, 2 * bounds.extents.y, 2 * bounds.extents.z);
+            bbox3DSize = bbox3DSize - Vector3.Dot(bbox3DSize, offsetDirection) * offsetDirection;
+            int j = 0;
+            for (int i = 0; i < 3; ++i)
+            {
+                if (bbox3DSize[i] != 0.0f)
+                {
+                    Assert.AreNotEqual(2, j);
+                    Assert.AreNotApproximatelyEqual(0.0f, bbox3DSize[i]);
+                    bbox2DSize[j] = bbox3DSize[i];
+                    ++j;    
+                }
+            }
+
+            bboxSizeArray[0] = bbox2DSize.x;
+            bboxSizeArray[1] = bbox2DSize.y;
+        }
+
+        ripplingMaterial.SetFloatArray("_BBox", bboxSizeArray);
+
+        Renderer rend = GetComponent<Renderer>();
+        if (rend != null)
+        {
+            gridMaterial = rend.material;
+            if(gridMaterial != null)
+            {
+                gridShader = gridMaterial.shader;
+            }
+        }
+
+        ripples = new List<Ripple>();
+
+
+
+        //Reset();
+    }
+
+    // Update is called once per frame
+    void Update () {
+        // get current time
+        float now = Time.time;
+
+        //Reset();
+
+        float[] centerArray; centerArray = new float[4] { 0.0f, 0.0f, 0.0f, 1.0f };
+
+        foreach (Ripple ripple in ripples)
+        {
+            ripplingMaterial.SetFloat("_Amplitude", ripple.amplitude);
+            ripplingMaterial.SetFloat("_TemporalOmega", ripple.temporalOmega);
+            ripplingMaterial.SetFloat("_SpatialOmega", ripple.spatialOmega);
+            ripplingMaterial.SetFloat("_Offset", ripple.offset);
+            ripplingMaterial.SetFloat("_TemporalDecay", ripple.temporalOmega);
+            ripplingMaterial.SetFloat("_SpatialDecay", ripple.spatialOmega);
+
+            ripplingMaterial.SetFloat("_T0", ripple.T0);
+            ripplingMaterial.SetFloat("_T", now);
+
+            ripplingMaterial.SetFloat("_TotalAmplitude", totalAmplitude);
+
+            centerArray[0] = ripple.center.x;
+            centerArray[1] = ripple.center.y;
+            ripplingMaterial.SetFloatArray("_Center", centerArray);
+
+            // this set _MainTex to canvasTexture
+            Graphics.Blit(canvasTexture, canvasTexture, ripplingMaterial);
+        }
+
+        gridMaterial.SetTexture("_WorldPositionOffsets", canvasTexture);
+        gridMaterial.SetFloat("_TotalAmplitude", totalAmplitude);
+        gridMaterial.SetFloat("_MaxClamp", maxClamp);
+
+        float[] dir = new float[4] { offsetDirection.x, offsetDirection.y, offsetDirection.z, 1.0f };
+        gridMaterial.SetFloatArray("_OffsetDirection", dir);
+    }
+
+    public void Reset()
+    {
+        Graphics.Blit(canvasTexture, canvasTexture, clearMaterial);
+    }
+
+    public void CreateRipple(Vector3 point, float amplitude, float temporalOmega, float spatialOmega, float offset, float temporalDecay, float spatialDecay)
+    {
+        float now = Time.time;
+
+        Ripple r = new Ripple();
+
+        // transform point into object reference framework
+        //Vector3 point1 = gameObject.transform.InverseTransformPoint(point);
+
+        //point1 = point1 - Vector3.Dot(point1, offsetDirection) * offsetDirection;
+
+        //int j = 0;
+        //for(int i = 0; i < 3; ++i)
+        //{
+        //    if(point1[i] != 0.0f)
+        //    {
+        //        Assert.AreNotEqual(2, j);
+        //        Assert.AreNotApproximatelyEqual(0.0f, bbox2DSize[j]);
+        //        r.center[j] = point1[i] / bbox2DSize[j] + uvTransform[j];
+        //        ++j;
+        //    }
+        //}
+
+
+        r.center[0] = 0.5f;
+        r.center[1] = 0.5f;
+
+
+        r.amplitude = amplitude;
+        r.temporalOmega = temporalOmega;
+        r.spatialOmega = spatialOmega;
+        r.offset = offset;
+        r.temporalDecay = temporalDecay;
+        r.spatialDecay = spatialDecay;
+        r.T0 = now;
+        
+        totalAmplitude += amplitude;
+
+        ripples.Add(r);
+
+        ++NTotal;
+    }
+
+    private struct Ripple
+    {
+        public Vector2 center;
+        public float amplitude;
+        public float spatialOmega;
+        public float temporalOmega;
+        public float offset;
+        public float temporalDecay;
+        public float spatialDecay;
+
+        public float T0;
+    }
+    public float maxClamp;
+    // in object reference framework
+    public Vector3 offsetDirection;
+
+
+    private RenderTexture canvasTexture;
+    private Shader ripplingShader;
+    private Material ripplingMaterial;
+    private Shader gridShader;
+    private Material gridMaterial;
+    private Shader clearShader;
+    private Material clearMaterial;
+
+    private List<Ripple> ripples;
+    private int NTotal;
+    private float totalAmplitude;
+
+    
+
+    private Vector2 bbox2DSize;
+
+    private static Vector2 uvTransform = new Vector2(0.5f, 0.5f);
+}

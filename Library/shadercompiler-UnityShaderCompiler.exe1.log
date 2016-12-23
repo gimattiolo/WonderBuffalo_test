@@ -1,0 +1,22 @@
+Base path: C:/Program Files/Unity/Editor/Data
+Cmd: getPlatforms
+Cmd: disassembleShader
+  api=15 insize=794 outsize=1611 ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=1115 outsize=292 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING UNITY_HARDWARE_TIER2 ok=1
+Cmd: disassembleShader
+  api=9 insize=292 outsize=511 ok=1
+Cmd: compileSnippet
+  api=8 type=0 insize=1115 outsize=670 kw= pd=UNITY_NO_LINEAR_COLORSPACE UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING SHADER_API_MOBILE ok=1
+Cmd: disassembleShader
+  api=13 insize=670 outsize=1880 ok=1
+Cmd: compileSnippet
+  api=1 type=1 insize=1115 outsize=128 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING UNITY_HARDWARE_TIER2 ok=1
+Cmd: disassembleShader
+  api=11 insize=128 outsize=152 ok=1
+Cmd: disassembleShader
+  api=15 insize=522 outsize=1199 ok=1
+Cmd: compileSnippet
+  api=8 type=1 insize=2109 outsize=1470 kw= pd=UNITY_NO_LINEAR_COLORSPACE UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING SHADER_API_MOBILE ok=1
+Cmd: disassembleShader
+  api=14 insize=1470 outsize=3143 ok=1

@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 466b380746d97d94cae756bd68d3c81b
+timeCreated: 1482193526
+licenseType: Free
+ShaderImporter:
+  defaultTextures:
+  - _WorldPositionOffsets: {instanceID: 0}
+  - _TextureBefore: {fileID: 10305, guid: 0000000000000000f000000000000000, type: 0}
+  - _TextureAfter: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
