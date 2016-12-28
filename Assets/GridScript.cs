@@ -115,7 +115,7 @@ public class GridScript : MonoBehaviour {
 
             if (now - ripples[i].T0 > timeThreshold)
             {
-                ripples[i].T0 = -1.0f;
+				DeleteRipple(i);
                 continue;
             }
 
@@ -213,6 +213,8 @@ public class GridScript : MonoBehaviour {
             return false;
         }
 
+		DeleteRipple (slot);
+
         float now = Time.time;
 
         Ripple r = new Ripple();
@@ -249,6 +251,16 @@ public class GridScript : MonoBehaviour {
 
         return true;
     }
+
+	public void DeleteRipple(int i)
+	{
+		if (ripples[i].T0 != -1.0f) 
+		{
+			totalAmplitude -= ripples[i].amplitude;
+			--NTotal;
+			ripples[i].T0 = -1.0f;
+		}
+	}
 
     public int GetActiveRippleNumber()
     {
