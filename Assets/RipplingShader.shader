@@ -26,12 +26,13 @@
 
 		Pass
 		{
+			ZWrite Off
+			ZTest Always
+			Cull Off
+			Fog{Mode Off}
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			
-
-			
 
 			#include "UnityCG.cginc"
 
@@ -87,20 +88,17 @@
 				float normDisp = lerp(amp * wave, _Amplitude, 0.5);
 				normDisp /= _TotalAmplitude;
 
+				// temporary solution
+				// probably it is better with a blend option
 				//float currDisp = normDisp;
 				//if (_Accumulate > 0.0)
 				//{ 
 				//	currDisp += tex2D(_MainTex, i.uv).b;
 				//}
-
-				// temporary solution
-				// probably it is better with a blend option
 				float currDisp = lerp(normDisp, normDisp + tex2D(_MainTex, i.uv).b, _Accumulate);
-
 				return fixed4(currDisp, currDisp, currDisp, 1.0);
 			}
 			ENDCG
 		}
-
 	}
 }

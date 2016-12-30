@@ -20,6 +20,8 @@
 		Pass
 		{
 			Cull off
+			ZTest Always
+			Fog { Mode Off}
 
 			CGPROGRAM
 			#pragma target 3.0
@@ -57,8 +59,6 @@
 				v2f o;
 
 				// get texture value == vertex offset
-
-
 				o.offset = float4(0.0, 0.0, 0.0, 1.0);
 
 #if !defined(SHADER_API_OPENGL)

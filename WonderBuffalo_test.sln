@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WonderBuffalo_test", "WonderBuffalo_test.csproj", "{64CBE676-1A83-E922-ABAB-AF74625390FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WonderBuffalo_test.Editor", "WonderBuffalo_test.Editor.csproj", "{C8B55CEE-FFC8-1D41-E6CB-BAA7F3CB234C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{64CBE676-1A83-E922-ABAB-AF74625390FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64CBE676-1A83-E922-ABAB-AF74625390FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64CBE676-1A83-E922-ABAB-AF74625390FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64CBE676-1A83-E922-ABAB-AF74625390FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8B55CEE-FFC8-1D41-E6CB-BAA7F3CB234C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8B55CEE-FFC8-1D41-E6CB-BAA7F3CB234C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8B55CEE-FFC8-1D41-E6CB-BAA7F3CB234C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8B55CEE-FFC8-1D41-E6CB-BAA7F3CB234C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

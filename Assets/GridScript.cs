@@ -12,20 +12,17 @@ public class GridScript : MonoBehaviour {
 	// Use this for initialization
 	protected void Init () {
 
-        totalAmplitude = 0;
+        totalAmplitude = 0.0f;
 
         // create render texture
-        RenderTextureReadWrite readWrite = RenderTextureReadWrite.Linear;
 
         canvasTextures = new RenderTexture[2];
-
-
-
-        canvasTextures[0] = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.ARGB32, readWrite);
+        canvasTextures[0] = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
         //canvasTextures[0].DiscardContents(false, false);
-
-        canvasTextures[1] = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.ARGB32, readWrite);
+        canvasTextures[1] = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
         //canvasTextures[1].DiscardContents(false, false);
+
+        worldoffsets = new RenderTexture(resolution, resolution, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
 
 
         clearShader = Shader.Find("Unlit/ClearShader");
@@ -106,6 +103,10 @@ public class GridScript : MonoBehaviour {
         //Graphics.Blit(canvasTextures[1], canvasTextures[0], clearMaterial);
         //Graphics.Blit(canvasTextures[0], canvasTextures[1], clearMaterial);
 
+
+
+
+
         for (int i = 0; i < ripples.Length; ++i)
         {
             if(ripples[i].T0 < 0.0f)
@@ -143,20 +144,27 @@ public class GridScript : MonoBehaviour {
 
             ripplingMaterial.SetFloat("_Accumulate", Convert.ToSingle(i != 0));
 
+            //ripplingMaterial.SetFloat("_Accumulate", Convert.ToSingle(i));
+
             // this set _MainTex to canvasTextures[index]
             Graphics.Blit(canvasTextures[inputIndex], canvasTextures[outputIndex], ripplingMaterial);
+
+            //Graphics.Blit(canvasTextures[outputIndex], canvasTextures[inputIndex], clearMaterial);
         }
 
-        gridMaterial.SetTexture("_WorldPositionOffsets", canvasTextures[outputIndex]);
+        Graphics.Blit(canvasTextures[outputIndex], worldoffsets);
+
+
+        gridMaterial.SetTexture("_WorldPositionOffsets", worldoffsets);
         gridMaterial.SetFloat("_TotalAmplitude", totalAmplitude);
         gridMaterial.SetFloat("_MaxClamp", maxClamp);
     }
 
-    //public void Reset()
-    //{
-     //   Graphics.Blit(canvasTextures[0], canvasTextures[0], clearMaterial);
-    //    Graphics.Blit(canvasTextures[1], canvasTextures[1], clearMaterial);
-    //}
+    public void Reset()
+    {
+        Graphics.Blit(canvasTextures[1], canvasTextures[0], clearMaterial);
+      Graphics.Blit(canvasTextures[0], canvasTextures[1], clearMaterial);
+   }
 
 
     private int FindSlot(bool forced)
@@ -297,7 +305,7 @@ public class GridScript : MonoBehaviour {
     // in object reference framework
     static private Vector3 yDir = new Vector3(0.0f, 1.0f, 0.0f);
 
-
+    private RenderTexture worldoffsets;
     private RenderTexture[] canvasTextures;
     private Shader ripplingShader;
     private Material ripplingMaterial;
