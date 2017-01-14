@@ -69,6 +69,7 @@
     <Compile Include="Assets\FloatingObjectScript.cs" />
     <Compile Include="Assets\GridScript.cs" />
     <Compile Include="Assets\InteractivePlaneScript.cs" />
+    <Compile Include="Assets\LeapLevelScript.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\Algorithms\SlidingMax.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\Algorithms\SmoothedFloat.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\Algorithms\SmoothedQuaternion.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="Assets\LeapMotionModules\InteractionEngine\Scripts\Validation\InteractionManagerValidation.cs" />
     <Compile Include="Assets\LevelScript.cs" />
     <Compile Include="Assets\MarkerScript.cs" />
+    <Compile Include="Assets\MyHoldingPoseController.cs" />
     <Compile Include="Assets\Navigation.cs" />
     <Compile Include="Assets\PhysicalMarkerScript.cs" />
     <Compile Include="Assets\ShapeWarperScript.cs" />
