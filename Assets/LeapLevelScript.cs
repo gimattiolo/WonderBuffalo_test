@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using Leap;
+using Leap.Unity;
 using Leap.Unity.Interaction;
 
 public class LeapLevelScript : MonoBehaviour {
@@ -8,12 +8,16 @@ public class LeapLevelScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         manager = (InteractionManager)FindObjectOfType(typeof(InteractionManager));
+        controller = (LeapHandController)FindObjectOfType(typeof(LeapHandController));
+
+        //controller.GraphicsEnabled = false;
+        //controller.PhysicsEnabled = false;
+
         marker = GameObject.Find("Capsule");
-
-        //IInteractionBehaviour b = marker.GetComponent<IInteractionBehaviour>();
-        //manager.GraspWithHand(manager., marker.GetComponent<InteractionManager>());
-
         done = false;
+
+
+
 
     }
 
@@ -24,44 +28,45 @@ public class LeapLevelScript : MonoBehaviour {
 
     public void OnHandGrasp(Hand hand)
     {
-        print("grasped");
+        //print("OnHandGrasp");
         if (done)
         {
             return;
         }
+
         done = true;
 
         manager.ReleaseHand(hand.Id);
-
-
-
-        //marker.transform.parent = ;
-
-        //ma
-
-        //Vector3 handNormal = new Vector3(h.PalmNormal.x, h.PalmNormal.y, h.PalmNormal.z);
-        //Vector3 handDirection = new Vector3(h.Direction.x, h.Direction.y, h.Direction.z);
-
-        //Vector3 bodyPosition = new Vector3(h.PalmPosition.x, h.PalmPosition.y, h.PalmPosition.z);// + 1.0f * offset;//;_obj.warper.RigidbodyPosition;
-
-        //Quaternion bodyRotation = Quaternion.LookRotation(handDirection, Vector3.Cross(handNormal, handDirection));//= _obj.warper.RigidbodyRotation;
-
-
         manager.GraspWithHand(hand, marker.GetComponent<IInteractionBehaviour>());
+
+        Object[] objs = FindObjectsOfType(typeof(RiggedHand));
+
+        RiggedHand riggedHand = null;
+        for (int i = 0; i < objs.Length; ++i)
+        {
+            RiggedHand h = (RiggedHand)(objs[i]);
+            if (hand.IsLeft && h.Handedness == Chirality.Left)
+            {
+                riggedHand = h;
+                break;
+            }
+            riggedHand = h;
+            break;
+        }
+
+        if(riggedHand != null)
+        {
+            riggedHand.PoseIsFrozen = true;
+        }
     }
     public void OnHandRelease(Hand hand)
     {
-        print("released");
-        //manager.ReleaseHand(hand.Id);
-
-        //manager.GraspWithHand(hand, marker.GetComponent<IInteractionBehaviour>());
-
+        //print("OnHandRelease");
     }
 
-
+    private LeapHandController controller;
     private InteractionManager manager;
     private GameObject marker;
-
-    bool done;
+    private bool done;
 }
     

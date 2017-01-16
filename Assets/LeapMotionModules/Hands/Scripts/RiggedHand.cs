@@ -41,7 +41,27 @@ namespace Leap.Unity {
     public bool UseMetaCarpals;
     public Vector3 modelFingerPointing = new Vector3(0, 0, 0);
     public Vector3 modelPalmFacing = new Vector3(0, 0, 0);
-    [Header("Values for Stored Start Pose")]
+
+
+        private Quaternion frozenPalmRotation;
+        private bool poseIsFrozen;
+
+        public bool PoseIsFrozen
+        {
+        get
+        {
+            return poseIsFrozen;
+        }
+        set
+        {
+            poseIsFrozen = value;
+
+            FreezeHand();
+        }
+    }
+
+
+        [Header("Values for Stored Start Pose")]
     [SerializeField]
     private List<Transform> jointList = new List<Transform>();
     [SerializeField]
@@ -50,13 +70,32 @@ namespace Leap.Unity {
     private List<Vector3> localPositions = new List<Vector3>();
 
     public override void InitHand() {
-      UpdateHand();
+
+            poseIsFrozen = false;
+            UpdateHand();
     }
 
     public Quaternion Reorientation() {
       return Quaternion.Inverse(Quaternion.LookRotation(modelFingerPointing, -modelPalmFacing));
     }
+
+    private void FreezeHand()
+    {
+
+        // freeze fingers
+        RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
+        for (int i = 0; i < fingerModelList.Length; ++i)
+        {
+            fingerModelList[i].FingerIsFrozen = poseIsFrozen;
+        }
+
+        // freeze palm
+        frozenPalmRotation = GetRiggedPalmRotation();
+    }
+
+
     public override void UpdateHand() {
+
       if (palm != null) {
         if (ModelPalmAtLeapWrist) {
           palm.position = GetWristPosition();
@@ -67,16 +106,26 @@ namespace Leap.Unity {
             wristJoint.position = GetWristPosition();
           }
         }
-        palm.rotation = GetRiggedPalmRotation() * Reorientation();
+
+        Quaternion palmRotation = GetRiggedPalmRotation();
+        if(poseIsFrozen)
+        {
+            palmRotation = frozenPalmRotation;
+
+        }
+        palm.rotation = palmRotation * Reorientation();
       }
 
       if (forearm != null) {
         forearm.rotation = GetArmRotation() * Reorientation();
       }
 
+     
+
       for (int i = 0; i < fingers.Length; ++i) {
         if (fingers[i] != null) {
           fingers[i].fingerType = (Finger.FingerType)i;
+        
           fingers[i].UpdateFinger();
         }
       }

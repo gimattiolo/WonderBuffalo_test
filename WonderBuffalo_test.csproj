@@ -190,6 +190,7 @@
     <Compile Include="Assets\LevelScript.cs" />
     <Compile Include="Assets\MarkerScript.cs" />
     <Compile Include="Assets\MyHoldingPoseController.cs" />
+    <Compile Include="Assets\MySuspensionControllerScript.cs" />
     <Compile Include="Assets\Navigation.cs" />
     <Compile Include="Assets\PhysicalMarkerScript.cs" />
     <Compile Include="Assets\ShapeWarperScript.cs" />

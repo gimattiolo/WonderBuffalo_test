@@ -31,11 +31,52 @@ namespace Leap.Unity {
 
     private RiggedHand riggedHand;
 
+    private Quaternion[] frozenFingerRotations = null;
+        private bool fingerIsFrozen = false;
+
+
+        public bool FingerIsFrozen
+        {
+            get
+            {
+                return fingerIsFrozen;
+            }
+            set
+            {
+                bool freeze = (value == true && fingerIsFrozen != value);
+                fingerIsFrozen = value;
+                if (freeze)
+                {
+                    FreezeFinger();
+                }
+            }
+        }
+
+        private void FreezeFinger()
+    {
+        if(frozenFingerRotations == null)
+        {
+            frozenFingerRotations = new Quaternion[bones.Length];
+        }
+        for (int i = 0; i < bones.Length; ++i)
+        {
+            if (bones[i] != null)
+            {
+                    frozenFingerRotations[i] = GetBoneRotation(i);
+            }
+        }
+    }
+
     /** Updates the bone rotations. */
     public override void UpdateFinger() {
       for (int i = 0; i < bones.Length; ++i) {
         if (bones[i] != null) {
-          bones[i].rotation = GetBoneRotation(i) * Reorientation();
+          Quaternion boneRotation = GetBoneRotation(i);
+          if (fingerIsFrozen && frozenFingerRotations != null)
+          {
+            boneRotation = frozenFingerRotations[i];
+          }
+          bones[i].rotation = boneRotation * Reorientation();;
           if (deformPosition) {
             bones[i].position = GetJointPosition(i);
           }
