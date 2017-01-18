@@ -76,7 +76,7 @@ namespace Leap.Unity {
           {
             boneRotation = frozenFingerRotations[i];
           }
-          bones[i].rotation = boneRotation * Reorientation();;
+          bones[i].rotation = boneRotation * Reorientation();
           if (deformPosition) {
             bones[i].position = GetJointPosition(i);
           }

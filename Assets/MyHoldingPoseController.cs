@@ -5,6 +5,18 @@ using Leap;
 
 public class MyHoldingPoseController : IHoldingPoseController
 {
+    [Tooltip("Object spaceRotation axis on grab.")]
+    [SerializeField]
+    private Vector3 bodyRotationAxis = new Vector3(0.0f, 1.0f, 0.0f);
+
+    [Tooltip("Rotation degrees angle on grab.")]
+    [SerializeField]
+    private float bodyRotationAngle = 0.0f;
+
+    [Tooltip("Offset along hand direction on grab.")]
+    [SerializeField]
+    private float bodyOffset = 0.0f;
+
     /**
     * Add the specified hand to the pose calculation.
     * @param hand The Leap.Hand object containing the reported tracking data.
@@ -34,10 +46,11 @@ public class MyHoldingPoseController : IHoldingPoseController
     */
     public override void GetHoldingPose(ReadonlyList<Hand> hands, out Vector3 position, out Quaternion rotation)
     {
-        if(hands.Count <= 0)
+        position = new Vector3();
+        rotation = new Quaternion(0.0f, 1.0f, 0.0f, 0.0f);
+
+        if (hands.Count <= 0)
         {
-            position = new Vector3();
-            rotation = new Quaternion();
             return;
         }
 
@@ -45,18 +58,22 @@ public class MyHoldingPoseController : IHoldingPoseController
 
         Vector3 handNormal = new Vector3(h.PalmNormal.x, h.PalmNormal.y, h.PalmNormal.z);
         Vector3 handDirection = new Vector3(h.Direction.x, h.Direction.y, h.Direction.z);
-        float offset = 1.0f;
 
-        Vector3 bodyPosition = new Vector3(h.PalmPosition.x, h.PalmPosition.y, h.PalmPosition.z);// + offset * handNormal;
+
+        //Vector3 bodyPosition = new Vector3(h.PalmPosition.x, h.PalmPosition.y, h.PalmPosition.z);// + offset * handNormal;
+        Vector3 bodyPosition = new Vector3(h.WristPosition.x, h.WristPosition.y, h.WristPosition.z);// + bodyOffset * handDirection;
                                                                                                  //Debug.Log("Caught");
-        Quaternion bodyRotation = Quaternion.LookRotation(handDirection, Vector3.Cross(handNormal, handDirection));
+        //Quaternion bodyRotation = Quaternion.LookRotation(handDirection, Vector3.Cross(handNormal, handDirection));
 
-        if(bodyRotation.w < 1.0f)
-        {
-            //Debug.Log("Caught");
-        }
+        //if(bodyRotation.w < 1.0f)
+        //{
+        //    Debug.Log("Caught");
+        //}
 
         position = bodyPosition;
-        rotation = Quaternion.identity;
+        bodyRotationAxis.Normalize();
+        rotation = Quaternion.AngleAxis(bodyRotationAngle, bodyRotationAxis);
+
+        //Debug.Log("Hold " + rotation);
     }
 }

@@ -14,15 +14,15 @@ namespace Leap.Unity.Interaction
         /** Moves the object kinematically. */
         public override void MoveTo(ReadonlyList<Hand> hands, PhysicsMoveInfo info, Vector3 solvedPosition, Quaternion solvedRotation)
         {
-            //if (info.shouldTeleport)
-            //{
-            //    _obj.warper.Teleport(solvedPosition, solvedRotation);
-            //}
-            //else
+            if (info.shouldTeleport)
+            {
+                _obj.warper.Teleport(solvedPosition, solvedRotation);
+            }
+            else
             {
                 _obj.rigidbody.MovePosition(solvedPosition);
-                //Debug.Log("Rotation: " + solvedRotation);
-                //_obj.rigidbody.MoveRotation(solvedRotation);
+                //Debug.Log("Move To Rotation: " + solvedRotation);
+                _obj.rigidbody.MoveRotation(solvedRotation);
             }
         }
 
