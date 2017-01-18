@@ -79,25 +79,25 @@ public class StickingObject : MonoBehaviour
         }
 
         //grasp object at startup for debugging purposes
-        if (!grasped)
-        {
-            if (!done)
-            {
-                if (controller.IsConnected)
-                {
-                    Frame frame = controller.Frame();
-                    //Frame previous = controller.Frame(1); //The previous frame
+        //if (!grasped)
+        //{
+        //    if (!done)
+        //    {
+        //        if (controller.IsConnected)
+        //        {
+        //            Frame frame = controller.Frame();
+        //            //Frame previous = controller.Frame(1); //The previous frame
 
-                    for (int i = 0; i < frame.Hands.Count; ++i)
-                    {
-                        OnHandGrasp(frame.Hands[i]);
-                        done = true;
-                        isCurrentGraspingHandValid = true;
-                        break;
-                    }
-                }
-            }
-        }
+        //            for (int i = 0; i < frame.Hands.Count; ++i)
+        //            {
+        //                OnHandGrasp(frame.Hands[i]);
+        //                done = true;
+        //                isCurrentGraspingHandValid = true;
+        //                break;
+        //            }
+        //        }
+        //    }
+        //}
 
         if (!grasped)
         {
