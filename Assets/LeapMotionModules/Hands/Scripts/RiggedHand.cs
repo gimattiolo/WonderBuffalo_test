@@ -81,7 +81,6 @@ namespace Leap.Unity {
 
     private void FreezeHand()
     {
-
         // freeze fingers
         RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
         for (int i = 0; i < fingerModelList.Length; ++i)
@@ -92,7 +91,6 @@ namespace Leap.Unity {
         // freeze palm
         frozenPalmRotation = GetRiggedPalmRotation();
     }
-
 
     public override void UpdateHand() {
 
@@ -110,7 +108,7 @@ namespace Leap.Unity {
         Quaternion palmRotation = GetRiggedPalmRotation();
         if(poseIsFrozen)
         {
-            palmRotation = frozenPalmRotation;
+            //palmRotation = frozenPalmRotation;
 
         }
         palm.rotation = palmRotation * Reorientation();
