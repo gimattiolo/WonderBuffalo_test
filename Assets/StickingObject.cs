@@ -11,25 +11,16 @@ public class StickingObject : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        //GUIText canvas  = (GUIText)FindObjectOfType(typeof(GUIText));
-
         GameObject textGameObject = GameObject.Find("Text");
 
         screenText = textGameObject.GetComponent<Text>();
 
         manager = (InteractionManager)FindObjectOfType(typeof(InteractionManager));
 
-        //controller = (LeapHandController)FindObjectOfType(typeof(LeapHandController));
-
         controller = new Controller();
         
         controller.FrameReady += new EventHandler<FrameEventArgs>(OnFrameReady);
         controller.InternalFrameReady += new EventHandler<InternalFrameEventArgs>(OnInternalFrameReady);
-
-        //listener = new Listener();
-
-        //controller.GraphicsEnabled = false;
-        //controller.PhysicsEnabled = false;
 
         riggedHand = null;
         graspingHand = null;
@@ -38,8 +29,6 @@ public class StickingObject : MonoBehaviour
         graspedObject = gameObject;
 
         behaviour = graspedObject.GetComponent<IInteractionBehaviour>();
-
-        dirty = false;
 
         isCurrValid = false;
         isPrevValid = true;
@@ -186,7 +175,7 @@ public class StickingObject : MonoBehaviour
             return;
         }
         
-        manager.ReleaseHand(graspingHand.Id);
+        bool released = manager.ReleaseHand(graspingHand.Id);
 
         //if (riggedHand != null)
         {
@@ -207,7 +196,7 @@ public class StickingObject : MonoBehaviour
         }
 
         bool released = manager.ReleaseHand(graspingHand.Id);
-        //Debug.Log("Released " + released);
+        Debug.Log("Released " + released);
 
         manager.RegisterInteractionBehaviour(behaviour);
 
@@ -300,8 +289,6 @@ public class StickingObject : MonoBehaviour
     private GameObject graspedObject;
 
     private IInteractionBehaviour behaviour;
-
-    private bool dirty;
 
     private bool isCurrValid;
     private bool isPrevValid;

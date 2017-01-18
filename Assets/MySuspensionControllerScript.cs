@@ -56,6 +56,12 @@ public class MySuspensionControllerScript : ISuspensionController
     {
         Debug.Log("Go into suspension");
 
+        //if (stickingObject != null)
+        //{
+        //    stickingObject.Ungrasp();
+        //}
+
+
         //_obj.gameObject.transform.position.Set(0.0f, 10.0f, 0.0f);
         _obj.rigidbody.useGravity = false;
         _obj.rigidbody.isKinematic = true;
@@ -65,7 +71,12 @@ public class MySuspensionControllerScript : ISuspensionController
     /** Resumes rendering of the object. */
     public override void Timeout()
     {
+        _obj.rigidbody.useGravity = true;
+        _obj.rigidbody.isKinematic = false;
+
+
         Debug.Log("Timeout suspension");
+
         setRendererState(true);
     }
 
