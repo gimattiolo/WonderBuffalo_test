@@ -875,8 +875,9 @@ namespace Leap.Unity.Interaction {
             //Remove the old id from the mapping
             _idToInteractionHand.Remove(untrackedInteractionHand.hand.Id);
             _idToInteractionHand[hand.Id] = interactionHand;
+                        //Debug.Log("Replaced hand " + hand.Id);
 
-            try {
+                        try {
               //This also dispatched InteractionObject.OnHandRegainedTracking()
               interactionHand.RegainTracking(hand);
 
@@ -905,8 +906,10 @@ namespace Leap.Unity.Interaction {
             //Otherwise just create a new one
             interactionHand = new InteractionHand(hand);
             _idToInteractionHand[hand.Id] = interactionHand;
-          }
-        }
+                      //  Debug.Log("Created hand " + hand.Id);
+
+                    }
+                }
 
         if (!handResultForced) {
           handResult = getHandResults(interactionHand);
@@ -1014,6 +1017,7 @@ namespace Leap.Unity.Interaction {
 
       //Loop through the stale ids and remove them from the map
       for (int i = 0; i < _handIdsToRemove.Count; i++) {
+                //Debug.Log("Removed hand " + _handIdsToRemove[i]);
         _idToInteractionHand.Remove(_handIdsToRemove[i]);
       }
       _handIdsToRemove.Clear();
