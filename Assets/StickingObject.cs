@@ -177,9 +177,9 @@ public class StickingObject : MonoBehaviour
         
         bool released = manager.ReleaseHand(graspingHand.Id);
 
-        //if (riggedHand != null)
+        if (riggedHand != null)
         {
-            //riggedHand.PoseIsFrozen = false;
+            riggedHand.PoseIsFrozen = false;
         }
     }
 
@@ -208,14 +208,13 @@ public class StickingObject : MonoBehaviour
         catch(InvalidOperationException e)
         {
             Debug.Log("Grasp Exception");
-            //isCurrValid = false;
         }
         finally
         {
             Debug.Log("Being grasped " + behaviour.IsBeingGraspedByHand(graspingHand.Id));
             if (!behaviour.IsBeingGraspedByHand(graspingHand.Id))
             {
-            //    isCurrValid = false;
+                isCurrValid = false;
             }
             else
             {
@@ -244,29 +243,29 @@ public class StickingObject : MonoBehaviour
 
         start = Time.time;
 
-        //UnityEngine.Object[] objs = FindObjectsOfType(typeof(RiggedHand));
+        UnityEngine.Object[] objs = FindObjectsOfType(typeof(RiggedHand));
 
 
-        //for (int i = 0; i < objs.Length; ++i)
-        //{
-        //    RiggedHand h = (RiggedHand)(objs[i]);
-        //    if (h == null)
-        //    {
-        //        continue;
-        //    }
-        //    if (graspingHand.IsLeft && h.Handedness == Chirality.Left)
-        //    {
-        //        riggedHand = h;
-        //        break;
-        //    }
-        //    riggedHand = h;
-        //    break;
-        //}
+        for (int i = 0; i < objs.Length; ++i)
+        {
+            RiggedHand h = (RiggedHand)(objs[i]);
+            if (h == null)
+            {
+                continue;
+            }
+            if (graspingHand.IsLeft && h.Handedness == Chirality.Left)
+            {
+                riggedHand = h;
+                break;
+            }
+            riggedHand = h;
+            break;
+        }
 
-        //if (riggedHand != null)
-        //{
-        //    //riggedHand.PoseIsFrozen = true;
-        //}
+        if (riggedHand != null)
+        {
+            riggedHand.PoseIsFrozen = true;
+        }
     }
 
     public void OnHandRelease(Hand hand)
