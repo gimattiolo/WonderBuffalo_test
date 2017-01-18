@@ -74,7 +74,14 @@ namespace Leap.Unity {
           Quaternion boneRotation = GetBoneRotation(i);
           if (fingerIsFrozen && frozenFingerRotations != null)
           {
-            boneRotation = riggedHand.GetRiggedPalmRotation() * frozenFingerRotations[i];
+            //Quaternion palmRotation = Quaternion.identity;
+            //if(riggedHand != null)
+            //{
+            //    palmRotation = riggedHand.GetRiggedPalmRotation();
+            //}
+
+            Quaternion palmRotation = riggedHand.GetRiggedPalmRotation();
+            boneRotation = palmRotation * frozenFingerRotations[i];
           }
                     bones[i].rotation = boneRotation * Reorientation();
           if (deformPosition) {

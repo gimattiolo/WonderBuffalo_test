@@ -60,7 +60,7 @@ public class MyHoldingPoseController : IHoldingPoseController
         Vector3 handDirection = new Vector3(h.Direction.x, h.Direction.y, h.Direction.z);
 
 
-        Vector3 bodyPosition = new Vector3(h.PalmPosition.x, h.PalmPosition.y, h.PalmPosition.z);// + offset * handNormal;
+        Vector3 bodyPosition = new Vector3(h.PalmPosition.x, h.PalmPosition.y, h.PalmPosition.z) + 0.05f * handNormal;
         //Vector3 bodyPosition = new Vector3(h.WristPosition.x, h.WristPosition.y, h.WristPosition.z);// + bodyOffset * handDirection;
                                                                                                  //Debug.Log("Caught");
         Quaternion bodyRotation = Quaternion.LookRotation(handDirection, Vector3.Cross(handNormal, handDirection));
