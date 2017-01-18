@@ -19,8 +19,8 @@ public class StickingObject : MonoBehaviour
 
         controller = new Controller();
         
-        controller.FrameReady += new EventHandler<FrameEventArgs>(OnFrameReady);
-        controller.InternalFrameReady += new EventHandler<InternalFrameEventArgs>(OnInternalFrameReady);
+        //controller.FrameReady += new EventHandler<FrameEventArgs>(OnFrameReady);
+        //controller.InternalFrameReady += new EventHandler<InternalFrameEventArgs>(OnInternalFrameReady);
 
         riggedHand = null;
         graspingHand = null;
@@ -35,7 +35,7 @@ public class StickingObject : MonoBehaviour
 
         done = false;
 
-        start = -1.0f;
+        graspStartTime = -1.0f;
    }
 
     private bool isGraspingHandValid()
@@ -66,15 +66,15 @@ public class StickingObject : MonoBehaviour
     {
         // time out for testing
         float now = Time.time;
-        if(start >= 0.0f)
+        if(graspStartTime >= 0.0f)
         {
             //screenText.text = "" + (now - start);
 
-            if (now - start >= 5.0f)
+            if (now - graspStartTime >= 5.0f)
             {
                 //screenText.text = "Expired";
                 //Ungrasp();
-                start = -1.0f;
+                graspStartTime = -1.0f;
             }
         }
 
@@ -128,7 +128,6 @@ public class StickingObject : MonoBehaviour
                         Grasp();
                     }
                 }
-
             }
         }
     }
@@ -140,21 +139,11 @@ public class StickingObject : MonoBehaviour
         //{
         //    str += "[ " + args.frame.Hands[i].Id + " ]";
         //}
-
         //Debug.Log(str);
-
-        //dirty = false;
-        //Frame frame = args.frame;
-        //for (int i = 0; i < frame.Hands.Count; ++i)
-        //{
-        //}
-
-        //currFrame = args.frame;
     }
     
     private void OnInternalFrameReady(object sender, InternalFrameEventArgs args)
     {
-
         //Debug.Log("On Internal Frame - frame " + args.frame.tracking_id);
     }
     
@@ -241,7 +230,7 @@ public class StickingObject : MonoBehaviour
 
         Grasp();
 
-        start = Time.time;
+        graspStartTime = Time.time;
 
         UnityEngine.Object[] objs = FindObjectsOfType(typeof(RiggedHand));
 
@@ -293,11 +282,8 @@ public class StickingObject : MonoBehaviour
     private bool isPrevValid;
 
     private bool done;
-    //private Frame currFrame;
 
-    //private Listener listener;
-
-    private float start;
+    private float graspStartTime;
 
     private Text screenText;
 }
