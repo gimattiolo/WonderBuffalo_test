@@ -30,8 +30,8 @@ public class StickingObject : MonoBehaviour
 
         behaviour = graspedObject.GetComponent<IInteractionBehaviour>();
 
-        isCurrValid = false;
-        isPrevValid = true;
+        isCurrentGraspingHandValid = false;
+        isPreviousGraspingHandValid = true;
 
         done = false;
 
@@ -92,7 +92,7 @@ public class StickingObject : MonoBehaviour
                     {
                         OnHandGrasp(frame.Hands[i]);
                         done = true;
-                        isCurrValid = true;
+                        isCurrentGraspingHandValid = true;
                         break;
                     }
                 }
@@ -104,10 +104,10 @@ public class StickingObject : MonoBehaviour
             return;
         }
 
-        isPrevValid = isCurrValid;
-        isCurrValid = isGraspingHandValid();
+        isPreviousGraspingHandValid = isCurrentGraspingHandValid;
+        isCurrentGraspingHandValid = isGraspingHandValid();
 
-        if (isCurrValid && !isPrevValid)
+        if (isCurrentGraspingHandValid && !isPreviousGraspingHandValid)
         {
             if (controller.IsConnected)
             {
@@ -203,7 +203,7 @@ public class StickingObject : MonoBehaviour
             Debug.Log("Being grasped " + behaviour.IsBeingGraspedByHand(graspingHand.Id));
             if (!behaviour.IsBeingGraspedByHand(graspingHand.Id))
             {
-                isCurrValid = false;
+                isCurrentGraspingHandValid = false;
             }
             else
             {
@@ -278,8 +278,8 @@ public class StickingObject : MonoBehaviour
 
     private IInteractionBehaviour behaviour;
 
-    private bool isCurrValid;
-    private bool isPrevValid;
+    private bool isCurrentGraspingHandValid;
+    private bool isPreviousGraspingHandValid;
 
     private bool done;
 
