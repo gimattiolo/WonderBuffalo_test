@@ -31,43 +31,57 @@ namespace Leap.Unity {
 
     private RiggedHand riggedHand;
 
-    private Quaternion[] frozenFingerRotations = null;
-        private bool fingerIsFrozen = false;
+    public Quaternion[] frozenFingerRotations = null;
+    private bool fingerIsFrozen = false;
 
 
-        public bool FingerIsFrozen
-        {
-            get
-            {
-                return fingerIsFrozen;
-            }
-            set
-            {
-                bool freeze = (value == true && fingerIsFrozen != value);
-                fingerIsFrozen = value;
-                if (freeze)
-                {
-                    FreezeFinger();
-                }
-            }
-        }
-
-        private void FreezeFinger()
+    public bool FingerIsFrozen
     {
-        if(frozenFingerRotations == null)
+        get
         {
-            frozenFingerRotations = new Quaternion[bones.Length];
+            return fingerIsFrozen;
         }
+        set
+        {
+            //bool freeze = (value == true && fingerIsFrozen != value);
+            //fingerIsFrozen = value;
+            //if (freeze)
+            //{
+            //    FreezeFinger();
+            //}
+            fingerIsFrozen = value;
+        }
+    }
+
+    public void FreezeFinger()
+    {
+        frozenFingerRotations = new Quaternion[bones.Length];
         for (int i = 0; i < bones.Length; ++i)
         {
             if (bones[i] != null)
             {
-                    frozenFingerRotations[i] = GetBoneRotation(i);
+                frozenFingerRotations[i] = GetBoneRotation(i);
             }
         }
     }
 
-    /** Updates the bone rotations. */
+    public void FreezeFinger(Quaternion[] rotations)
+    {
+        
+        frozenFingerRotations = new Quaternion[bones.Length];
+
+        Debug.Assert(bones.Length == rotations.Length);
+        for (int i = 0; i < bones.Length; ++i)
+        {
+            frozenFingerRotations[i] = rotations[i];
+        }
+    }
+
+
+
+
+
+        /** Updates the bone rotations. */
     public override void UpdateFinger() {
       for (int i = 0; i < bones.Length; ++i) {
         if (bones[i] != null) {
@@ -83,7 +97,9 @@ namespace Leap.Unity {
             Quaternion palmRotation = riggedHand.GetRiggedPalmRotation();
             boneRotation = palmRotation * frozenFingerRotations[i];
           }
-                    bones[i].rotation = boneRotation * Reorientation();
+
+          bones[i].rotation = boneRotation * Reorientation();
+
           if (deformPosition) {
             bones[i].position = GetJointPosition(i);
           }

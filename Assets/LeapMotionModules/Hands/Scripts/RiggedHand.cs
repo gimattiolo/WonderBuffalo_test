@@ -5,10 +5,13 @@
 \******************************************************************************/
 
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Leap;
+
+using System.IO;
 
 namespace Leap.Unity {
   /** This version of IHandModel supports a hand respresentation based on a skinned and jointed 3D model asset.*/
@@ -55,13 +58,14 @@ namespace Leap.Unity {
         set
         {
             poseIsFrozen = value;
-
-            FreezeHand();
+                //SaveHand();
+                //FreezeHand();
+                FreezeHandFromFile();
         }
     }
 
 
-        [Header("Values for Stored Start Pose")]
+    [Header("Values for Stored Start Pose")]
     [SerializeField]
     private List<Transform> jointList = new List<Transform>();
     [SerializeField]
@@ -79,18 +83,156 @@ namespace Leap.Unity {
       return Quaternion.Inverse(Quaternion.LookRotation(modelFingerPointing, -modelPalmFacing));
     }
 
+    private Quaternion ParseQuaternion(string qstr)
+    {
+        Quaternion q = Quaternion.identity;
+        int startIndex = qstr.IndexOf('(');
+
+        if(startIndex == -1)
+        {
+            return q;
+        }
+        char c = ',';
+        for (int i = 0; i < 4;  ++i)
+        {
+            if( i == 3)
+            {
+                c = ')';
+            }
+
+            if (startIndex == -1)
+            {
+                return q;
+            }
+
+            int outIndex = qstr.IndexOf(c, startIndex);
+
+            if (outIndex == -1)
+            {
+                return q;
+            }
+
+            string valueStr = qstr.Substring(startIndex + 1, (outIndex - 1) - startIndex);
+            if(!string.IsNullOrEmpty(valueStr))
+            {
+                q[i] = Convert.ToSingle(valueStr);
+            }
+            startIndex = outIndex + 1;
+        }
+        return q;
+    }
+
+
+    private void LoadFrozenFingers(out Quaternion[][] rotations)
+    {
+        // per finger per falange
+        rotations = new Quaternion[5][];
+
+        string suffix = "";
+        if (Handedness == Chirality.Left)
+        {
+            suffix = "left";
+        }
+        else
+        {
+            if (Handedness == Chirality.Right)
+            {
+                suffix = "right";
+            }
+        }
+
+        string fullfileName = "C:/Users/mattiolog/WonderBuffalo_test/poses_" + suffix + "_hand.txt";
+        StreamReader sr = new StreamReader(fullfileName);
+        // save fingers rotation
+        RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
+        for (int i = 0; i < fingerModelList.Length; ++i)
+        {
+            rotations[i] = new Quaternion[fingerModelList[i].bones.Length];
+            string fingerIndex = sr.ReadLine();
+
+
+            for (int j = 0; j < fingerModelList[i].bones.Length; ++j)
+            {
+                string quatStr = sr.ReadLine();
+                rotations[i][j] = ParseQuaternion(quatStr);
+            }
+        }
+        sr.Close();
+    }
+
     private void FreezeHand()
     {
-        // freeze fingers
+        RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
+        for (int i = 0; i < fingerModelList.Length; ++i)
+        {
+            bool freeze = (fingerModelList[i].FingerIsFrozen == false);
+            fingerModelList[i].FingerIsFrozen = poseIsFrozen;
+            if (freeze)
+            {
+                    fingerModelList[i].FreezeFinger();
+
+            }
+        }
+        // freeze palm
+        frozenPalmRotation = GetRiggedPalmRotation();
+    }
+
+    private void FreezeHandFromFile()
+    {
+        Quaternion[][] rotations;
+        LoadFrozenFingers(out rotations);
+
+        RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
+        for (int i = 0; i < fingerModelList.Length; ++i)
+        {
+            bool freeze = (fingerModelList[i].FingerIsFrozen == false);
+            fingerModelList[i].FingerIsFrozen = poseIsFrozen;
+            if (freeze)
+            {
+                fingerModelList[i].FreezeFinger(rotations[i]);
+            }
+        }
+        // freeze palm
+        frozenPalmRotation = GetRiggedPalmRotation();
+    }
+
+    private void SaveHand()
+    {
+        string suffix = "";
+        if (Handedness == Chirality.Left)
+        {
+            suffix = "left";
+        }
+        else
+        {
+            if (Handedness == Chirality.Right)
+            {
+                suffix = "right";
+            }
+        }
+
+        string fullfileName = "C:/Users/mattiolog/WonderBuffalo_test/poses_" + suffix + "_hand.txt";
+        StreamWriter sw = new StreamWriter(fullfileName);
+        // save fingers rotation
         RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
         for (int i = 0; i < fingerModelList.Length; ++i)
         {
             fingerModelList[i].FingerIsFrozen = poseIsFrozen;
+            sw.WriteLine("" + i);
+            for (int j = 0; j < fingerModelList[i].frozenFingerRotations.Length; ++j)
+            {
+                sw.WriteLine("" + fingerModelList[i].frozenFingerRotations[j]);
+            }
         }
+        sw.Close();
+
+        Debug.Log("Saved poses into " + fullfileName);
 
         // freeze palm
         frozenPalmRotation = GetRiggedPalmRotation();
     }
+
+
 
     public override void UpdateHand() {
 

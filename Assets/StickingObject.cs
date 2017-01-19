@@ -64,6 +64,12 @@ public class StickingObject : MonoBehaviour
         // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            //FreezeHandPose(Chirality.Left);
+            //FreezeHandPose(Chirality.Right);
+        }
+
         // time out for testing
         float now = Time.time;
         if(graspStartTime >= 0.0f)
@@ -213,6 +219,26 @@ public class StickingObject : MonoBehaviour
         }
     }
 
+    private void FreezeHandPose(Chirality handedness)
+    {
+        UnityEngine.Object[] objs = FindObjectsOfType(typeof(RiggedHand));
+
+
+        for (int i = 0; i < objs.Length; ++i)
+        {
+            RiggedHand h = (RiggedHand)(objs[i]);
+            if (h == null)
+            {
+                continue;
+            }
+            if (h.Handedness == handedness)
+            {
+                h.PoseIsFrozen = true;
+                break;
+            }
+        }
+    }
+
     public void OnHandGrasp(Hand hand)
     {
         if (grasped)
@@ -255,6 +281,7 @@ public class StickingObject : MonoBehaviour
         {
             riggedHand.PoseIsFrozen = true;
         }
+
     }
 
     public void OnHandRelease(Hand hand)
