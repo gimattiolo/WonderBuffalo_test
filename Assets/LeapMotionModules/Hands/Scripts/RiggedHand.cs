@@ -46,11 +46,11 @@ namespace Leap.Unity {
     public Vector3 modelPalmFacing = new Vector3(0, 0, 0);
 
 
-        private Quaternion frozenPalmRotation;
-        private bool poseIsFrozen;
+    private Quaternion frozenPalmRotation;
+    private bool poseIsFrozen;
 
-        public bool PoseIsFrozen
-        {
+    public bool PoseIsFrozen
+    {
         get
         {
             return poseIsFrozen;
@@ -58,11 +58,13 @@ namespace Leap.Unity {
         set
         {
             poseIsFrozen = value;
-                //SaveHand();
-                //FreezeHand();
-                FreezeHandFromFile();
+            //SaveHand();
+            //FreezeHand();
+            FreezeHandFromFile();
         }
     }
+
+    private string dir = "./";
 
 
     [Header("Values for Stored Start Pose")]
@@ -113,15 +115,17 @@ namespace Leap.Unity {
             }
 
             string valueStr = qstr.Substring(startIndex + 1, (outIndex - 1) - startIndex);
-            if(!string.IsNullOrEmpty(valueStr))
+            if(string.IsNullOrEmpty(valueStr))
             {
-                q[i] = Convert.ToSingle(valueStr);
+                return q;
             }
+
+            q[i] = Convert.ToSingle(valueStr);
+
             startIndex = outIndex + 1;
         }
         return q;
     }
-
 
     private void LoadFrozenFingers(out Quaternion[][] rotations)
     {
@@ -141,7 +145,7 @@ namespace Leap.Unity {
             }
         }
 
-        string fullfileName = "C:/Users/mattiolog/WonderBuffalo_test/poses_" + suffix + "_hand.txt";
+        string fullfileName = dir + "poses_" + suffix + "_hand.txt";
         StreamReader sr = new StreamReader(fullfileName);
         // save fingers rotation
         RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
@@ -154,7 +158,8 @@ namespace Leap.Unity {
             for (int j = 0; j < fingerModelList[i].bones.Length; ++j)
             {
                 string quatStr = sr.ReadLine();
-                rotations[i][j] = ParseQuaternion(quatStr);
+                //rotations[i][j] = ParseQuaternion(quatStr);
+                rotations[i][j] = Quaternion.identity;
             }
         }
         sr.Close();
@@ -170,14 +175,13 @@ namespace Leap.Unity {
             if (freeze)
             {
                     fingerModelList[i].FreezeFinger();
-
             }
         }
         // freeze palm
         frozenPalmRotation = GetRiggedPalmRotation();
     }
 
-    private void FreezeHandFromFile()
+    public void FreezeHandFromFile()
     {
         Quaternion[][] rotations;
         LoadFrozenFingers(out rotations);
@@ -211,7 +215,7 @@ namespace Leap.Unity {
             }
         }
 
-        string fullfileName = "C:/Users/mattiolog/WonderBuffalo_test/poses_" + suffix + "_hand.txt";
+        string fullfileName = dir + "poses_" + suffix + "_hand.txt";
         StreamWriter sw = new StreamWriter(fullfileName);
         // save fingers rotation
         RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
@@ -231,8 +235,6 @@ namespace Leap.Unity {
         // freeze palm
         frozenPalmRotation = GetRiggedPalmRotation();
     }
-
-
 
     public override void UpdateHand() {
 
@@ -259,8 +261,6 @@ namespace Leap.Unity {
       if (forearm != null) {
         forearm.rotation = GetArmRotation() * Reorientation();
       }
-
-     
 
       for (int i = 0; i < fingers.Length; ++i) {
         if (fingers[i] != null) {
