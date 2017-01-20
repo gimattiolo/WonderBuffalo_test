@@ -49,24 +49,6 @@ namespace Leap.Unity {
     private Quaternion frozenPalmRotation;
     private bool poseIsFrozen;
 
-    public bool PoseIsFrozen
-    {
-        get
-        {
-            return poseIsFrozen;
-        }
-        set
-        {
-            poseIsFrozen = value;
-            //SaveHand();
-            FreezeHand();
-            //FreezeHandFromFile();
-        }
-    }
-
-    private string dir = "./";
-
-
     [Header("Values for Stored Start Pose")]
     [SerializeField]
     private List<Transform> jointList = new List<Transform>();
@@ -133,25 +115,11 @@ namespace Leap.Unity {
         return q;
     }
 
-    private void LoadFrozenFingers(out Quaternion[][] rotations)
+    private Quaternion[][] LoadFrozenFingers(string fullfileName)
     {
         // per finger per falange
-        rotations = new Quaternion[5][];
+        Quaternion[][] rotations = new Quaternion[5][];
 
-        string suffix = "";
-        if (Handedness == Chirality.Left)
-        {
-            suffix = "left";
-        }
-        else
-        {
-            if (Handedness == Chirality.Right)
-            {
-                suffix = "right";
-            }
-        }
-
-        string fullfileName = dir + "poses_" + suffix + "_hand.txt";
         StreamReader sr = new StreamReader(fullfileName);
         // save fingers rotation
         RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
@@ -160,74 +128,63 @@ namespace Leap.Unity {
             rotations[i] = new Quaternion[fingerModelList[i].bones.Length];
             string fingerIndex = sr.ReadLine();
 
-
             for (int j = 0; j < fingerModelList[i].bones.Length; ++j)
             {
                 string quatStr = sr.ReadLine();
-                //rotations[i][j] = ParseQuaternion(quatStr);
-                rotations[i][j] = Quaternion.identity;
+                rotations[i][j] = ParseQuaternion(quatStr);
             }
         }
         sr.Close();
+
+        return rotations;
     }
 
     private void FreezeHand()
     {
+        poseIsFrozen = true;
         RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
         for (int i = 0; i < fingerModelList.Length; ++i)
         {
-            bool freeze = (fingerModelList[i].FingerIsFrozen == false);
-            fingerModelList[i].FingerIsFrozen = poseIsFrozen;
-            if (freeze)
-            {
-                    fingerModelList[i].FreezeFinger();
-            }
+                fingerModelList[i].FreezeFinger();
         }
         // freeze palm
         frozenPalmRotation = GetRiggedPalmRotation();
     }
 
-    public void FreezeHandFromFile()
+    private void FreezeHandFromFile(string fullFileName)
     {
-        Quaternion[][] rotations;
-        LoadFrozenFingers(out rotations);
+        Quaternion[][] rotations = LoadFrozenFingers(fullFileName);
 
+        poseIsFrozen = true;
         RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
         for (int i = 0; i < fingerModelList.Length; ++i)
         {
-            bool freeze = (fingerModelList[i].FingerIsFrozen == false);
-            fingerModelList[i].FingerIsFrozen = poseIsFrozen;
-            if (freeze)
-            {
-                fingerModelList[i].FreezeFinger(rotations[i]);
-            }
+            fingerModelList[i].FreezeFinger(rotations[i]);
         }
         // freeze palm
         frozenPalmRotation = GetRiggedPalmRotation();
     }
 
-    private void SaveHand()
+    public void FreezeHand(string fullFileName)
     {
-        string suffix = "";
-        if (Handedness == Chirality.Left)
+        if (File.Exists(fullFileName))
         {
-            suffix = "left";
+            FreezeHandFromFile(fullFileName);
+            return;
         }
-        else
-        {
-            if (Handedness == Chirality.Right)
-            {
-                suffix = "right";
-            }
-        }
+        FreezeHand();
+    }
 
-        string fullfileName = dir + "poses_" + suffix + "_hand.txt";
-        StreamWriter sw = new StreamWriter(fullfileName);
+    public void FreezeAndSave(string fullFileName)
+    {
+        StreamWriter sw = new StreamWriter(fullFileName);
+
+        FreezeHand();
+            
         // save fingers rotation
         RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
         for (int i = 0; i < fingerModelList.Length; ++i)
         {
-            fingerModelList[i].FingerIsFrozen = poseIsFrozen;
             sw.WriteLine("" + i);
             for (int j = 0; j < fingerModelList[i].frozenFingerRelativeRotations.Length; ++j)
             {
@@ -236,10 +193,7 @@ namespace Leap.Unity {
         }
         sw.Close();
 
-        Debug.Log("Saved poses into " + fullfileName);
-
-        // freeze palm
-        frozenPalmRotation = GetRiggedPalmRotation();
+        Debug.Log("Saved poses into " + fullFileName);
     }
 
     public override void UpdateHand() {

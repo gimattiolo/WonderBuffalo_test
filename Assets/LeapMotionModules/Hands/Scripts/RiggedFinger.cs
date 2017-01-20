@@ -34,28 +34,10 @@ namespace Leap.Unity {
     // relative to the palm
     public Quaternion[] frozenFingerRelativeRotations = null;
     private bool fingerIsFrozen = false;
-
-
-    public bool FingerIsFrozen
-    {
-        get
-        {
-            return fingerIsFrozen;
-        }
-        set
-        {
-            //bool freeze = (value == true && fingerIsFrozen != value);
-            //fingerIsFrozen = value;
-            //if (freeze)
-            //{
-            //    FreezeFinger();
-            //}
-            fingerIsFrozen = value;
-        }
-    }
-
+ 
     public void FreezeFinger()
     {
+        fingerIsFrozen = true;
         frozenFingerRelativeRotations = new Quaternion[bones.Length];
 
         Quaternion palmRotation = riggedHand.GetRiggedPalmRotation();
@@ -77,6 +59,7 @@ namespace Leap.Unity {
 
     public void FreezeFinger(Quaternion[] rotations)
     {
+        fingerIsFrozen = true;
         frozenFingerRelativeRotations = new Quaternion[bones.Length];
 
         Debug.Assert(bones.Length == rotations.Length);

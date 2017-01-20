@@ -7,7 +7,8 @@ using UnityEngine.UI;
 
 public class StickingObject : MonoBehaviour
 {
-
+    private string leftPoseFileName = "./poses_left_hand.txt";
+    private string rightPoseFileName = "./poses_right_hand.txt";
     // Use this for initialization
     void Start()
     {
@@ -66,8 +67,8 @@ public class StickingObject : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            //FreezeHandPose(Chirality.Left);
-            //FreezeHandPose(Chirality.Right);
+            //FreezeAndSaveHandPose(Chirality.Left);
+            FreezeAndSaveHandPose(Chirality.Right);
         }
 
         // time out for testing
@@ -155,27 +156,27 @@ public class StickingObject : MonoBehaviour
     
     public void Ungrasp()
     {
-        if (!grasped)
-        {
-            return;
-        }
+        // TODO
+        //if (!grasped)
+        //{
+        //    return;
+        //}
 
-        if (manager == null)
-        {
-            return;
-        }
+        //if (manager == null)
+        //{
+        //    return;
+        //}
 
-        if(graspingHand == null)
-        {
-            return;
-        }
+        //if(graspingHand == null)
+        //{
+        //    return;
+        //}
         
-        bool released = manager.ReleaseHand(graspingHand.Id);
+        //bool released = manager.ReleaseHand(graspingHand.Id);
 
-        if (riggedHand != null)
-        {
-            riggedHand.PoseIsFrozen = false;
-        }
+        //if (riggedHand != null)
+        //{
+        //}
     }
 
     public void Grasp()
@@ -211,19 +212,12 @@ public class StickingObject : MonoBehaviour
             {
                 isCurrentGraspingHandValid = false;
             }
-            else
-            {
-                //behaviour.NotifyHandGrasped()graspin;
-
-            }
         }
     }
 
-    private void FreezeHandPose(Chirality handedness)
+    private void FreezeAndSaveHandPose(Chirality handedness)
     {
         UnityEngine.Object[] objs = FindObjectsOfType(typeof(RiggedHand));
-
-
         for (int i = 0; i < objs.Length; ++i)
         {
             RiggedHand h = (RiggedHand)(objs[i]);
@@ -233,8 +227,16 @@ public class StickingObject : MonoBehaviour
             }
             if (h.Handedness == handedness)
             {
-                h.PoseIsFrozen = true;
-                break;
+                if(handedness == Chirality.Left)
+                {
+                    h.FreezeAndSave(leftPoseFileName);
+                    break;
+                }
+                if (handedness == Chirality.Right)
+                {
+                    h.FreezeAndSave(rightPoseFileName);
+                    break;
+                }
             }
         }
     }
@@ -279,7 +281,17 @@ public class StickingObject : MonoBehaviour
 
         if (riggedHand != null)
         {
-            riggedHand.PoseIsFrozen = true;
+            if(riggedHand.Handedness == Chirality.Left)
+            {
+                riggedHand.FreezeHand(leftPoseFileName);
+            }
+            else
+            {
+                if (riggedHand.Handedness == Chirality.Right)
+                {
+                    riggedHand.FreezeHand(rightPoseFileName);
+                }
+            }
         }
 
     }
