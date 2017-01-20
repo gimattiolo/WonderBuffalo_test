@@ -29,9 +29,10 @@ namespace Leap.Unity {
       return Quaternion.Inverse(Quaternion.LookRotation(modelFingerPointing, -modelPalmFacing));
     }
 
-    private RiggedHand riggedHand;
+    public RiggedHand riggedHand;
 
-    public Quaternion[] frozenFingerRotations = null;
+    // relative to the palm
+    public Quaternion[] frozenFingerRelativeRotations = null;
     private bool fingerIsFrozen = false;
 
 
@@ -55,47 +56,51 @@ namespace Leap.Unity {
 
     public void FreezeFinger()
     {
-        frozenFingerRotations = new Quaternion[bones.Length];
+        frozenFingerRelativeRotations = new Quaternion[bones.Length];
+
+        Quaternion palmRotation = riggedHand.GetRiggedPalmRotation();
+        float angle;
+        Vector3 axis;
+        palmRotation.ToAngleAxis(out angle, out axis);
+        Quaternion invPalmRotation = Quaternion.AngleAxis(-angle, axis);
+
         for (int i = 0; i < bones.Length; ++i)
         {
             if (bones[i] != null)
             {
-                frozenFingerRotations[i] = GetBoneRotation(i);
+                Quaternion fingerRotation = GetBoneRotation(i);
+                // we store the rotation of each finger relative to the palm rotation
+                frozenFingerRelativeRotations[i] = invPalmRotation  * fingerRotation;
             }
         }
     }
 
     public void FreezeFinger(Quaternion[] rotations)
     {
-        
-        frozenFingerRotations = new Quaternion[bones.Length];
+        frozenFingerRelativeRotations = new Quaternion[bones.Length];
 
         Debug.Assert(bones.Length == rotations.Length);
         for (int i = 0; i < bones.Length; ++i)
         {
-            frozenFingerRotations[i] = rotations[i];
+            frozenFingerRelativeRotations[i] = rotations[i];
         }
     }
 
-
-
-
-
-        /** Updates the bone rotations. */
+    /** Updates the bone rotations. */
     public override void UpdateFinger() {
       for (int i = 0; i < bones.Length; ++i) {
         if (bones[i] != null) {
           Quaternion boneRotation = GetBoneRotation(i);
-          if (fingerIsFrozen && frozenFingerRotations != null)
+          if (fingerIsFrozen && frozenFingerRelativeRotations != null)
           {
-            //Quaternion palmRotation = Quaternion.identity;
-            //if(riggedHand != null)
-            //{
-            //    palmRotation = riggedHand.GetRiggedPalmRotation();
-            //}
 
-            Quaternion palmRotation = riggedHand.GetRiggedPalmRotation();
-            boneRotation = palmRotation * frozenFingerRotations[i];
+            Quaternion palmRotation = Quaternion.identity;
+            if(riggedHand != null)
+            {
+                palmRotation = riggedHand.GetRiggedPalmRotation();
+            }
+
+            boneRotation = palmRotation * frozenFingerRelativeRotations[i];
           }
 
           bones[i].rotation = boneRotation * Reorientation();

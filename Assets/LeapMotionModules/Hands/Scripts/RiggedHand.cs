@@ -59,8 +59,8 @@ namespace Leap.Unity {
         {
             poseIsFrozen = value;
             //SaveHand();
-            //FreezeHand();
-            FreezeHandFromFile();
+            FreezeHand();
+            //FreezeHandFromFile();
         }
     }
 
@@ -77,8 +77,14 @@ namespace Leap.Unity {
 
     public override void InitHand() {
 
-            poseIsFrozen = false;
-            UpdateHand();
+        poseIsFrozen = false;
+
+        RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
+        for (int i = 0; i < 5; i++)
+        {
+            fingerModelList[i].riggedHand = this;
+        }
+        UpdateHand();
     }
 
     public Quaternion Reorientation() {
@@ -223,9 +229,9 @@ namespace Leap.Unity {
         {
             fingerModelList[i].FingerIsFrozen = poseIsFrozen;
             sw.WriteLine("" + i);
-            for (int j = 0; j < fingerModelList[i].frozenFingerRotations.Length; ++j)
+            for (int j = 0; j < fingerModelList[i].frozenFingerRelativeRotations.Length; ++j)
             {
-                sw.WriteLine("" + fingerModelList[i].frozenFingerRotations[j]);
+                sw.WriteLine("" + fingerModelList[i].frozenFingerRelativeRotations[j]);
             }
         }
         sw.Close();
@@ -378,8 +384,10 @@ namespace Leap.Unity {
     }
     /**Triggers SetupRiggedFinger() in each RiggedFinger script for this RiggedHand */
     private void SetupRiggedFingers() {
+      
       RiggedFinger[] fingerModelList = GetComponentsInChildren<RiggedFinger>();
       for (int i = 0; i < 5; i++) {
+        fingerModelList[i].riggedHand = this;
         int fingersIndex = fingerModelList[i].fingerType.indexOf();
         fingers[fingersIndex] = fingerModelList[i];
         fingerModelList[i].SetupRiggedFinger(UseMetaCarpals);
