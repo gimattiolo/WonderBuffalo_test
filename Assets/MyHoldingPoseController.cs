@@ -1,21 +1,19 @@
 ﻿using UnityEngine;
 using Leap.Unity.Interaction;
 using Leap;
+using Leap.Unity;
 
 
 public class MyHoldingPoseController : IHoldingPoseController
 {
-    [Tooltip("Object spaceRotation axis on grab.")]
+    [Tooltip("Offset along hand normal on grab.")]
     [SerializeField]
-    private Vector3 bodyRotationAxis = new Vector3(0.0f, 1.0f, 0.0f);
+    private float bodyHandNormalOffset = 0.0f;
 
-    [Tooltip("Rotation degrees angle on grab.")]
+    [Tooltip("Offset along hand grasp direction on grab.")]
     [SerializeField]
-    private float bodyRotationAngle = 0.0f;
+    private float bodyHandGraspOffset = 0.0f;
 
-    [Tooltip("Offset along hand direction on grab.")]
-    [SerializeField]
-    private float bodyOffset = 0.0f;
 
     /**
     * Add the specified hand to the pose calculation.
@@ -46,8 +44,8 @@ public class MyHoldingPoseController : IHoldingPoseController
     */
     public override void GetHoldingPose(ReadonlyList<Hand> hands, out Vector3 position, out Quaternion rotation)
     {
-        position = new Vector3();
-        rotation = new Quaternion(0.0f, 1.0f, 0.0f, 0.0f);
+        position = Vector3.zero;
+        rotation = Quaternion.identity;
 
         if (hands.Count <= 0)
         {
@@ -56,23 +54,23 @@ public class MyHoldingPoseController : IHoldingPoseController
 
         Hand h = hands[0];
 
-        Vector3 handNormal = new Vector3(h.PalmNormal.x, h.PalmNormal.y, h.PalmNormal.z);
-        Vector3 handDirection = new Vector3(h.Direction.x, h.Direction.y, h.Direction.z);
+        Vector3 handNormal = UnityVectorExtension.ToVector3(h.PalmNormal);
+        //Debug.Log("hand normal " + handNormal);
 
+        Vector3 handDirection = UnityVectorExtension.ToVector3(h.Direction);
+        //Debug.Log("hand direction " + handDirection);
 
-        Vector3 bodyPosition = new Vector3(h.PalmPosition.x, h.PalmPosition.y, h.PalmPosition.z) + 0.05f * handNormal;
-        //Vector3 bodyPosition = new Vector3(h.WristPosition.x, h.WristPosition.y, h.WristPosition.z);// + bodyOffset * handDirection;
-                                                                                                 //Debug.Log("Caught");
-        Quaternion bodyRotation = Quaternion.LookRotation(handDirection, Vector3.Cross(handNormal, handDirection));
+        Vector3 handGraspDirection = Vector3.Cross(handNormal, handDirection);
+        //Debug.Log("hand grasp " + handGraspDirection);
 
-        //if(bodyRotation.w < 1.0f)
-        //{
-        //    Debug.Log("Caught");
-        //}
+        Vector3 bodyPosition = UnityVectorExtension.ToVector3(h.PalmPosition);
+        bodyPosition += bodyHandNormalOffset * handNormal;
+        bodyPosition += bodyHandGraspOffset * handGraspDirection;
+
+        Quaternion bodyRotation = Quaternion.FromToRotation(Vector3.up, handGraspDirection);
 
         position = bodyPosition;
-        bodyRotationAxis.Normalize();
-        rotation = bodyRotation;// Quaternion.AngleAxis(bodyRotationAngle, bodyRotationAxis);
+        rotation = bodyRotation;
 
         //Debug.Log("Hold " + rotation);
     }
