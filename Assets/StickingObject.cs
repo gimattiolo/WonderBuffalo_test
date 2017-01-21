@@ -129,7 +129,7 @@ public class StickingObject : MonoBehaviour
                     hand = frame.Hands[i];
                     if (hand.IsLeft == graspingHand.IsLeft)
                     {
-                        Debug.Log("*************Regrasping with " + frame.Id + "-" + hand.Id);
+                        //Debug.Log("*************Regrasping with " + frame.Id + "-" + hand.Id);
 
                         graspingHand = hand;
                         Grasp();
@@ -192,7 +192,7 @@ public class StickingObject : MonoBehaviour
         }
 
         bool released = manager.ReleaseHand(graspingHand.Id);
-        Debug.Log("Released " + released);
+        //Debug.Log("Released " + released);
 
         manager.RegisterInteractionBehaviour(behaviour);
 
@@ -203,11 +203,11 @@ public class StickingObject : MonoBehaviour
         }
         catch(InvalidOperationException e)
         {
-            Debug.Log("Grasp Exception");
+            //Debug.Log("Grasp Exception");
         }
         finally
         {
-            Debug.Log("Being grasped " + behaviour.IsBeingGraspedByHand(graspingHand.Id));
+            //Debug.Log("Being grasped " + behaviour.IsBeingGraspedByHand(graspingHand.Id));
             if (!behaviour.IsBeingGraspedByHand(graspingHand.Id))
             {
                 isCurrentGraspingHandValid = false;
@@ -248,7 +248,7 @@ public class StickingObject : MonoBehaviour
             return;
         }
 
-        Debug.Log("OnHandGrasp");
+        //Debug.Log("OnHandGrasp");
         screenText.text = "OnHandGrasp";
 
 
@@ -298,7 +298,7 @@ public class StickingObject : MonoBehaviour
 
     public void OnHandRelease(Hand hand)
     {
-        Debug.Log("OnHandRelease");
+        //Debug.Log("OnHandRelease");
         screenText.text = "OnHandRelease";
 
         //grasped = false;
