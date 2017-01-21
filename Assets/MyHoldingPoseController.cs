@@ -12,8 +12,11 @@ public class MyHoldingPoseController : IHoldingPoseController
 
     [Tooltip("Offset along hand grasp direction on grab.")]
     [SerializeField]
-    private float bodyHandGraspOffset = 0.0f;
+    private float bodyHandGraspDirectionOffset = 0.0f;
 
+    [Tooltip("Offset along hand grasp direction on grab.")]
+    [SerializeField]
+    private float bodyHandDirectionOffset = 0.0f;
 
     /**
     * Add the specified hand to the pose calculation.
@@ -65,7 +68,8 @@ public class MyHoldingPoseController : IHoldingPoseController
 
         Vector3 bodyPosition = UnityVectorExtension.ToVector3(h.PalmPosition);
         bodyPosition += bodyHandNormalOffset * handNormal;
-        bodyPosition += bodyHandGraspOffset * handGraspDirection;
+        bodyPosition += bodyHandDirectionOffset * handDirection;
+        bodyPosition += bodyHandGraspDirectionOffset * handGraspDirection;
 
         Quaternion bodyRotation = Quaternion.FromToRotation(Vector3.up, handGraspDirection);
 
