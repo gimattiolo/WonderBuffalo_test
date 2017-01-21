@@ -43,7 +43,7 @@ namespace Leap.Unity.Interaction
         /** Resumes rendering of the object. */
         public override void Resume()
         {
-            Debug.Log("Resume from suspension");
+            //Debug.Log("Resume from suspension");
 
             _obj.rigidbody.useGravity = true;
             _obj.rigidbody.isKinematic = false;
@@ -58,7 +58,7 @@ namespace Leap.Unity.Interaction
         /** Suspends rendering of the object and sets the IsKinematic property of its rigid body to true. */
         public override void Suspend()
         {
-            Debug.Log("Go into suspension");
+            //Debug.Log("Go into suspension");
 
             //if (stickingObject != null)
             //{
@@ -79,7 +79,7 @@ namespace Leap.Unity.Interaction
             _obj.rigidbody.isKinematic = false;
 
 
-            Debug.Log("Timeout suspension");
+            //Debug.Log("Timeout suspension");
 
             setRendererState(true);
         }

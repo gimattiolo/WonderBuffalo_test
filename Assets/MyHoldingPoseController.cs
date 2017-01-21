@@ -14,7 +14,7 @@ public class MyHoldingPoseController : IHoldingPoseController
     [SerializeField]
     private float bodyHandGraspDirectionOffset = 0.0f;
 
-    [Tooltip("Offset along hand grasp direction on grab.")]
+    [Tooltip("Offset along hand direction on grab.")]
     [SerializeField]
     private float bodyHandDirectionOffset = 0.0f;
 
